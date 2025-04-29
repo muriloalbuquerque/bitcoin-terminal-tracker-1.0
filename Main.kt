@@ -1,69 +1,50 @@
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.net.HttpURLConnection
-import java.net.URL
+# Bitcoin Terminal Tracker 1.0
 
-// Projeto: Monitor de Preço do Bitcoin em Terminal (Kotlin Puro)
+📈 **Bitcoin Terminal Tracker** é um aplicativo de terminal desenvolvido em **Kotlin**, que permite acompanhar o preço atual do Bitcoin em tempo real diretamente no terminal.
 
-fun main() {
-    while (true) {
-        val bitcoinPrice = fetchBitcoinPrice()
-        println("Preço atual do Bitcoin: $bitcoinPrice")
+## 🔥 Tecnologias utilizadas
 
-        println("Aguardando 3 minutos para próxima atualização...\n")
+- **Kotlin** — Linguagem principal do projeto
+- **API de preço do Bitcoin** — Utiliza a API pública da CoinCap para obter o preço
+- **HTTP Requests** — Para buscar as informações da API
+- **Aplicação de Terminal** — Interface simples e direta para o terminal
 
+## 🚀 Como rodar o projeto
 
-        try {
-            Thread.sleep(180000)
-        } catch (e: InterruptedException) {
-            e.printStackTrace()
-        }
-    }
-}
+1. Clone o repositório:
+   ```bash
+   git clone https://github.com/muriloalbuquerque/bitcoin-terminal-tracker-1.0.git
+   ```
+2. Abra o projeto no seu IDE preferido (recomendo o IntelliJ IDEA).
+3. Execute a aplicação.
 
-fun fetchBitcoinPrice(): String {
-    val apiUrl = "https://api.coincap.io/v2/assets/bitcoin"
+## ✨ Funcionalidades
 
-    try {
-        val url = URL(apiUrl)
-        val connection = url.openConnection() as HttpURLConnection
-        connection.requestMethod = "GET"
-        connection.setRequestProperty("User-Agent", "Mozilla/5.0 (compatible; BitcoinTracker/1.0)")
+- Consulta em tempo real do preço do Bitcoin
+- Atualizações automáticas a cada 3 minutos
+- Interface simples e direta no terminal
 
+## 📚 Objetivos do projeto
 
-        println("Conexão feita com sucesso!")
+Este projeto foi criado para praticar:
+- Consumo de APIs em Kotlin
+- Desenvolvimento de aplicações para terminal
+- Estruturação e organização de código limpo e eficiente
 
-        val inputStream = if (connection.responseCode == 200) {
-            connection.inputStream
-        } else {
-            connection.errorStream
-        }
+## ⚙️ Como funciona
 
-        if (connection.responseCode != 200) {
-            return "Erro ${connection.responseCode}: ${connection.responseMessage}"
-        }
+A cada 3 minutos, o programa faz uma requisição para a API da **CoinCap** e obtém o preço atual do Bitcoin em USD. O preço é exibido no terminal em um formato de fácil leitura. Em caso de erro na requisição ou falha na obtenção dos dados, uma mensagem de erro será exibida.
 
-        val reader = BufferedReader(InputStreamReader(inputStream))
-        val response = StringBuffer()
+## 📝 Exemplo de saída no terminal
 
-        reader.forEachLine { line -> response.append(line) }
+```
+Preço atual do Bitcoin: US$ 56,345.67
+Aguardando 3 minutos para próxima atualização...
+```
 
-        reader.close()
-        inputStream.close()
+## 🤝 Contribuições
 
-        val responseString = response.toString()
-        val priceRegex = """"priceUsd":"([\d.]+)"""".toRegex()
-        val match = priceRegex.find(responseString)
+Contribuições são bem-vindas! Se você encontrar algum erro ou tiver sugestões de melhorias, fique à vontade para abrir uma issue ou enviar um pull request.
 
-        return if (match != null) {
-            val price = match.groupValues[1].toDouble()
-            "US$ %.2f".format(price)
-        } else {
-            "Preço não encontrado"
-        }
+---
 
-    } catch (e: Exception) {
-        e.printStackTrace()
-        return "Erro ao obter o preço do Bitcoin"
-    }
-}
